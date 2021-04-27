@@ -1,7 +1,7 @@
 # Plug Boehm GC with ballerina
 
 ## Prerequisites
-1. Follow the topic `Building the collector` on the [link](https://hboehm.info/gc/simple_example.html).
+1. Follow the topic `Building the collector` on the [link](https://hboehm.info/gc/simple_example.html) to build Boehm collector.
 2. Install required version of ballerina.
 3. Build `nballerina`.
 4. Clone this repository.

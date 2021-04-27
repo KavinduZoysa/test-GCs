@@ -5,7 +5,7 @@
 
 int balAlloc(int size) {
   GC_INIT();
-  int *p = (int *) GC_MALLOC(sizeof(int));
+  int *p = (int *) GC_MALLOC(sizeof(size));
   printf("The value of p is: %p\n", p);
   printf("pos = %d", (uintptr_t)p);
   return  (uintptr_t)p;
