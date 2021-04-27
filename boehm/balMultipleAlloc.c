@@ -6,7 +6,6 @@ int balMultipleAlloc() {
   int i;
   int count = 10000;
 
-  GC_INIT();
   for (i = 0; i < count; ++i) {
      int *p = (int *) GC_MALLOC(sizeof(int)); 
      if (i % (count/100) == 0) {

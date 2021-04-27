@@ -18,9 +18,13 @@
 
         clang-11 -I<PATH_TO_BOEHM_INSTALLATION>/include -c balAlloc.c -o balAlloc.o
 
+4. Generate obj file for GC init.
+
+        clang-11 -I<PATH_TO_BOEHM_INSTALLATION>/include -c balGCInit.c -o balGCInit.o
+
 4. Genearate the executable
 
-        clang-11 single_alloc.ll balAlloc.o <PATH_TO_BOEHM_INSTALLATION>/lib/libgc.so -o singleBalAlloc
+        clang-11 single_alloc.ll balAlloc.o balGCInit.o <PATH_TO_BOEHM_INSTALLATION>/lib/libgc.so -o singleBalAlloc
 
 5. Run
 
@@ -41,7 +45,7 @@
 
 4. Genearate the executable
 
-        clang-11 multiple_alloc.ll balMultipleAlloc.o <PATH_TO_BOEHM_INSTALLATION>/lib/libgc.so -o multipleBalAlloc
+        clang-11 multiple_alloc.ll balMultipleAlloc.o balGCInit.o <PATH_TO_BOEHM_INSTALLATION>/lib/libgc.so -o multipleBalAlloc
 
 5. Run
 
