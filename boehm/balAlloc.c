@@ -3,10 +3,11 @@
 #include <stdio.h>
 #include <stdint.h>
 
-int balAlloc(int size) {
-    int *p = (int *) GC_MALLOC(sizeof(size));
+// int* p;
+int balAlloc(int size) { 
+    int* p = (int *) GC_MALLOC(sizeof(size));
     printf("The value of p is: %p\n", p);
-    printf("pos = %d", (uintptr_t)p);
+    printf("pos = %d\n", (uintptr_t)p);
     return  (uintptr_t)p;
 }
 
