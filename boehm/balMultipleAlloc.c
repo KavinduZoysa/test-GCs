@@ -3,16 +3,16 @@
 #include <stdio.h>
 
 int balMultipleAlloc() {
-  int i;
-  int count = 10000;
+    int i;
+    int count = 10000;
 
-  for (i = 0; i < count; ++i) {
-     int *p = (int *) GC_MALLOC(sizeof(int)); 
-     if (i % (count/100) == 0) {
-       printf("Heap size(GC_get_heap_size) = %d\n", GC_get_heap_size());
-       printf("Heap size(GC_get_free_bytes) = %d\n", GC_get_free_bytes());
-     }
-   } 
-  return 0;
+    for (i = 0; i < count; ++i) {
+        int *p = (int *)GC_MALLOC(sizeof(int)*10);
+        *p = 0;
+        if (i % (count / 100) == 0) {
+            printf("Heap size(GC_get_heap_size) = %d\n", GC_get_heap_size());
+            printf("Heap size(GC_get_free_bytes) = %d\n", GC_get_free_bytes());
+        }
+    }
+    return 0;
 }
-
