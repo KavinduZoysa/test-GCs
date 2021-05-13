@@ -3,6 +3,12 @@ source_filename = "main.ll"
 
 @heapPtr = dso_local global i32* null, align 8
 
+@.str = private unnamed_addr constant [3 x i8] c"%p\00", align 1
+@.str.1 = private unnamed_addr constant [3 x i8] c"%d\00", align 1
+
+%struct.anon = type { i32, i32, i32, i32, i32 }
+@__LLVM_StackMaps = external constant %struct.anon, align 4
+
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local void @foo(i32 %0) #0 {
   %2 = alloca i32, align 4
@@ -40,11 +46,17 @@ define dso_local i32 @main() #0 gc "statepoint-example" {
   %statepoint_token = call token (i64, i32, i32 (i32*)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_i32p0i32f(i64 2882400000, i32 0, i32 (i32*)* @bar, i32 1, i32 0, i32* %6, i32 0, i32 0)
   %7 = call i32 @llvm.experimental.gc.result.i32(token %statepoint_token)
   store i32 %7, i32* %1, align 4
+  %"%8" = load i32, i32* getelementptr inbounds (%struct.anon, %struct.anon* @__LLVM_StackMaps, i32 0, i32 0), align 4
+  %"%9" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.1, i64 0, i64 0), i32 %"%8")
+  %"%10" = bitcast %struct.anon* @__LLVM_StackMaps to i32*
+  %"%11" = call i32 (i8*, ...)  @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i64 0, i64 0), i32* %"%10") #1
   ret i32 0
 }
 
 ; Function Attrs: nounwind
 declare dso_local i8* @malloc(i64) #1
+
+declare dso_local i32 @printf(i8*, ...) #1
 
 declare token @llvm.experimental.gc.statepoint.p0f_isVoidi32f(i64 immarg, i32 immarg, void (i32)*, i32 immarg, i32 immarg, ...)
 
