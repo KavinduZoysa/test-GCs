@@ -10,22 +10,36 @@ struct StackMap {
    int32_t a3;
 };
 
-const extern struct StackMap __LLVM_StackMaps;
-int32_t *heapPtr;
+register long rsp asm ("rsp");
+register long rbp asm ("rbp");
 
-void foo(int32_t val) {
-    *heapPtr = val;
+const extern struct StackMap __LLVM_StackMaps;
+extern void* getCallers(int);
+extern int* getHeapRefs(uint64_t*, int);
+
+void foo() {
+    int32_t* heapPtr3 = malloc(sizeof(uint64_t));
+    *heapPtr3 = 345;
 }
 
-int bar(int32_t *hPtr) {
-    *hPtr = 234;
-    foo(*hPtr);
-    return *hPtr;
+void bar() {
+    uint64_t* heapPtr2 = malloc(sizeof(uint64_t));
+    *heapPtr2 = 7;
+
+    foo();
+    void* callLocations = getCallers(2);
+    int* offsets = getHeapRefs((uint64_t*)callLocations, 2);
+    printf("%d\n", *offsets);
+    printf("%d\n", *(offsets + 1));
+    printf("%d\n", *(offsets + 2));
+    printf("(uint8_t*)rsp : %p\n", (uint8_t*)rsp);
+    printf("1 : %lu\n", *((uint64_t*)*((uint64_t*) ((uint8_t*)rsp + *(offsets + 1)))));
+    printf("2 : %lu\n", *((uint64_t*)*((uint64_t*) ((uint8_t*)rsp + 8 + *(offsets + 2)))));
 }
 
 int main() {
-    heapPtr = malloc(sizeof(int32_t));
-    heapPtr++;
-    int x = bar(heapPtr);
     readStackMap((uint64_t*) &__LLVM_StackMaps);
+    uint64_t* heapPtr1 = malloc(sizeof(uint64_t));
+    *heapPtr1 = 9;
+    bar();
 }
