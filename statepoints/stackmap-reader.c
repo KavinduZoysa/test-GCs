@@ -3,7 +3,7 @@
 #include "stackmap-reader.h"
 #include <stdlib.h>
 
-#define FIRST_FUNC_OFFSET 15
+#define FIRST_FUNC_OFFSET 10
 uint32_t numOfRecords = 0;
 
 void readLocations(locationInfo* locations, uint16_t numOfLocations) {
@@ -204,9 +204,9 @@ int* getHeapRefs(uint64_t* callLocations, int numOfCallLocations) {
     int* offsets = malloc(sizeof(int));
     int numOfOffsets = 0;
     function* firstFunc = stackMapPointer -> functions;
-    for (size_t cl = 0; cl < numOfCallLocations; cl++) {
+    for (size_t cl = 1; cl < numOfCallLocations - 1; cl++) {
         uint64_t callLoc = *(callLocations + cl);
-        if (cl == 0)
+        if (cl == 1)
             callLoc = callLoc - FIRST_FUNC_OFFSET; 
         uint8_t matched = 0;
         for (size_t f=0; f < stackMapPointer -> numFunctions; f++) {
@@ -224,7 +224,7 @@ int* getHeapRefs(uint64_t* callLocations, int numOfCallLocations) {
                 for (size_t l = 3; l < nl; l = l+2) {
                     numOfOffsets = numOfOffsets + 1;
                     *offsets = numOfOffsets;
-                    offsets = realloc(offsets, 1);
+                    offsets = realloc(offsets, sizeof(int)*(numOfOffsets + 1));
                     *(offsets + numOfOffsets) = (firstLocInfo + l) -> offset + stackSize;
                 }
                 stackSize = stackSize + fn->stackSize;

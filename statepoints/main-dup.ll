@@ -1,4 +1,4 @@
-; ModuleID = 'main-dup.ll'
+; ModuleID = 'main.c'
 source_filename = "main.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
@@ -23,16 +23,14 @@ define dso_local void @foo() #0 gc "statepoint-example" !dbg !20 {
   %2 = alloca i8*, align 8
   %3 = alloca i32*, align 8
   call void @llvm.dbg.declare(metadata i32** %1, metadata !21, metadata !DIExpression()), !dbg !25
-  %4 = call i8* @malloc(i64 8) #5, !dbg !26
+  %4 = call noalias i8* @malloc(i64 8) #5, !dbg !26
   %5 = bitcast i8* %4 to i32*, !dbg !26
   store i32* %5, i32** %1, align 8, !dbg !25
   %6 = load i32*, i32** %1, align 8, !dbg !27
   store i32 5, i32* %6, align 4, !dbg !28
-  %statepoint_token = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @baz, i32 0, i32 0, i32 0, i32 0, i8* %4), !dbg !29
-  %boxedVal = call i32*  @llvm.experimental.gc.relocate.p1i32(token %statepoint_token, i32 7, i32 7)  
+  call void @baz(), !dbg !29
   call void @llvm.dbg.declare(metadata i8** %2, metadata !30, metadata !DIExpression()), !dbg !32
-  %statepoint_token1 = call token (i64, i32, i8* (i32)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p0i8i32f(i64 2882400000, i32 0, i8* (i32)* @getCallers, i32 1, i32 0, i32 3, i32 0, i32 0), !dbg !33
-  %7 = call i8* @llvm.experimental.gc.result.p0i8(token %statepoint_token1), !dbg !32
+  %7 = call i8* @getCallers(i32 3), !dbg !33
   store i8* %7, i8** %2, align 8, !dbg !32
   %8 = load i8*, i8** %2, align 8, !dbg !34
   %9 = bitcast i8* %8 to i64*, !dbg !35
@@ -60,8 +58,7 @@ define dso_local void @foo() #0 gc "statepoint-example" !dbg !20 {
   %30 = bitcast i8* %29 to i64*, !dbg !59
   %31 = load i64, i64* %30, align 8, !dbg !60
   %32 = trunc i64 %31 to i32, !dbg !60
-  %statepoint_token2 = call token (i64, i32, i32* (i64*, i32)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p0i32p0i64i32f(i64 2882400000, i32 0, i32* (i64*, i32)* @getHeapRefs, i32 2, i32 0, i64* %28, i32 %32, i32 0, i32 0), !dbg !61
-  %33 = call i32* @llvm.experimental.gc.result.p0i32(token %statepoint_token2), !dbg !55
+  %33 = call i32* @getHeapRefs(i64* %28, i32 %32), !dbg !61
   store i32* %33, i32** %3, align 8, !dbg !55
   %34 = load i32*, i32** %3, align 8, !dbg !62
   %35 = load i32, i32* %34, align 4, !dbg !63
@@ -126,7 +123,7 @@ define dso_local void @foo() #0 gc "statepoint-example" !dbg !20 {
 declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
 
 ; Function Attrs: nounwind
-declare dso_local i8* @malloc(i64) #2
+declare dso_local noalias i8* @malloc(i64) #2
 
 declare dso_local i8* @getCallers(i32) #3
 
@@ -142,49 +139,32 @@ define dso_local void @bar() #0 gc "statepoint-example" !dbg !113 {
   %1 = alloca i64*, align 8
   %2 = alloca i32, align 4
   call void @llvm.dbg.declare(metadata i64** %1, metadata !114, metadata !DIExpression()), !dbg !115
-  %3 = call i8* @malloc(i64 8) #5, !dbg !116
+  %3 = call noalias i8* @malloc(i64 8) #5, !dbg !116
   %4 = bitcast i8* %3 to i64*, !dbg !116
   store i64* %4, i64** %1, align 8, !dbg !115
   call void @llvm.dbg.declare(metadata i32* %2, metadata !117, metadata !DIExpression()), !dbg !118
   store i32 23, i32* %2, align 4, !dbg !118
   %5 = load i64*, i64** %1, align 8, !dbg !119
   store i64 7, i64* %5, align 8, !dbg !120
-  %statepoint_token = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @foo, i32 0, i32 0, i32 0, i32 0, i8* %3), !dbg !121
-  %boxedVal = call i32*  @llvm.experimental.gc.relocate.p1i32(token %statepoint_token, i32 7, i32 7)  
+  call void @foo(), !dbg !121
   ret void, !dbg !122
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 gc "statepoint-example" !dbg !123 {
   %1 = alloca i64*, align 8
-  %statepoint_token = call token (i64, i32, void (i64*)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidp0i64f(i64 2882400000, i32 0, void (i64*)* @readStackMap, i32 1, i32 0, i64* bitcast (%struct.StackMap* @__LLVM_StackMaps to i64*), i32 0, i32 0), !dbg !126
+  call void @readStackMap(i64* bitcast (%struct.StackMap* @__LLVM_StackMaps to i64*)), !dbg !126
   call void @llvm.dbg.declare(metadata i64** %1, metadata !127, metadata !DIExpression()), !dbg !128
-  %2 = call i8* @malloc(i64 8) #5, !dbg !129
+  %2 = call noalias i8* @malloc(i64 8) #5, !dbg !129
   %3 = bitcast i8* %2 to i64*, !dbg !129
   store i64* %3, i64** %1, align 8, !dbg !128
   %4 = load i64*, i64** %1, align 8, !dbg !130
   store i64 9, i64* %4, align 8, !dbg !131
-  %statepoint_token1 = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @bar, i32 0, i32 0, i32 0, i32 0, i8* %2), !dbg !132
-  %boxedVal = call i32*  @llvm.experimental.gc.relocate.p1i32(token %statepoint_token1, i32 7, i32 7)  
+  call void @bar(), !dbg !132
   ret i32 0, !dbg !133
 }
 
 declare dso_local void @readStackMap(i64*) #3
-
-declare token @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 immarg, i32 immarg, void ()*, i32 immarg, i32 immarg, ...)
-
-declare token @llvm.experimental.gc.statepoint.p0f_p0i8i32f(i64 immarg, i32 immarg, i8* (i32)*, i32 immarg, i32 immarg, ...)
-
-declare i32*  @llvm.experimental.gc.relocate.p1i32(token, i32, i32)
-; Function Attrs: nounwind readonly
-declare i8* @llvm.experimental.gc.result.p0i8(token) #4
-
-declare token @llvm.experimental.gc.statepoint.p0f_p0i32p0i64i32f(i64 immarg, i32 immarg, i32* (i64*, i32)*, i32 immarg, i32 immarg, ...)
-
-; Function Attrs: nounwind readonly
-declare i32* @llvm.experimental.gc.result.p0i32(token) #4
-
-declare token @llvm.experimental.gc.statepoint.p0f_isVoidp0i64f(i64 immarg, i32 immarg, void (i64*)*, i32 immarg, i32 immarg, ...)
 
 attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind readnone speculatable willreturn }
