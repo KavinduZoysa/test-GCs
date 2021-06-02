@@ -204,7 +204,7 @@ int* getHeapRefs(uint64_t* callLocations, int numOfCallLocations) {
     int* offsets = malloc(sizeof(int));
     int numOfOffsets = 0;
     function* firstFunc = stackMapPointer -> functions;
-    for (size_t cl = 1; cl < numOfCallLocations - 1; cl++) {
+    for (size_t cl = 1; cl < numOfCallLocations + 1; cl++) {
         uint64_t callLoc = *(callLocations + cl);
         if (cl == 1)
             callLoc = callLoc - FIRST_FUNC_OFFSET; 
