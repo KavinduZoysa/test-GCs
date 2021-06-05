@@ -34,7 +34,8 @@ attributes #2 = { noreturn nounwind  }
 !5 = !{i32 2, !"Debug Info Version", i32 3}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, emissionKind: FullDebug)
-!1 = !DIFile(filename: "expr_binary_add.bal", directory: "PATH_TO_SOURCE")
+!1 = !DIFile(filename: "expr_binary_add.bal", directory: "PATH_TO_BAL_SOURCE")
 
 !2 = distinct !DISubprogram(name: "foo", scope: !1, file: !1, line: 1, type: !3, unit: !0)
 !3 = !DISubroutineType(types: !{null})
+!4 = !DILocation(line: 2, column: 5, scope: !2)
