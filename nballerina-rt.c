@@ -25,31 +25,29 @@ void on_error(void *vdata, const char *msg, int errnum) { printf("Error : %s\n",
 
 int on_frame(void *data, uintptr_t pc, const char *filename, int lineno, const char *function) {
     FrameArray *frameArray = (FrameArray *)data;
-    int n_frames = frameArray->length;
+    int length = frameArray->length;
 
-    if (n_frames == 0) {
+    if (frameArray->capacity == 0) {
         frameArray->frames = calloc(FRAME_MIN_SIZE, sizeof(Frame));
-    } else if (n_frames == frameArray->capacity) {
-        int cap = frameArray->capacity;
-        cap = cap*cap;
-        frameArray->capacity = cap;
-        frameArray->frames = realloc(frameArray->frames, cap);
+        frameArray->capacity = FRAME_MIN_SIZE;
+    } else if (length == frameArray->capacity) {
+        int new_cap = frameArray->capacity * 2;
+        frameArray->capacity = new_cap;
+        frameArray->frames = realloc(frameArray->frames, new_cap * sizeof(Frame));
     }
 
-    Frame *frame = frameArray->frames + n_frames;
+    Frame *frame = frameArray->frames + length;
     frame->filename = filename;
     frame->lineno = lineno;
     frame->function = function;
-    frameArray->length = n_frames + 1;
+    frameArray->length = length + 1;
     return 0;
 }
 
 void print_backtrace() {
     struct backtrace_state *state = backtrace_create_state(NULL, THREAD, on_error, NULL);
 
-    FrameArray frameArray;
-    frameArray.length = 0;
-    frameArray.capacity = FRAME_MIN_SIZE;
+    FrameArray frameArray = {0, 0};
     backtrace_full(state, SKIP_FROM_END, on_frame, on_error, &frameArray);
 
     printf("Abort \n");
@@ -58,6 +56,7 @@ void print_backtrace() {
     for (; frame < lastFrame; frame++) {
         printf("\tat %s(%s:%d)\n", frame->function, frame->filename, frame->lineno);
     }
+    free(frameArray.frames);
 }
 
 void panic() { print_backtrace(); }
