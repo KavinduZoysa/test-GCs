@@ -71,5 +71,3 @@ void sig_init() {
     sa.sa_sigaction = (void *)handler;
     sigaction(SIGFPE, &sa, NULL);
 }
-
-void panic() {}
