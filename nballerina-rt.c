@@ -1,12 +1,13 @@
 #include <inttypes.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "third-party-lib/libbacktrace/backtrace.h"
 
 #define FRAME_MIN_SIZE 5
-#define SKIP_FROM_BEGINING 4
-#define SKIP_FROM_END 2
+#define SKIP_FROM_BEGINING 3
+#define SKIP_FROM_END 4
 #define THREAD 0
 
 typedef struct {
@@ -48,15 +49,27 @@ void print_backtrace() {
     struct backtrace_state *state = backtrace_create_state(NULL, THREAD, on_error, NULL);
 
     FrameArray frameArray = {0, 0};
-    backtrace_full(state, SKIP_FROM_END, on_frame, on_error, &frameArray);
+    backtrace_full(state, SKIP_FROM_BEGINING, on_frame, on_error, &frameArray);
 
     printf("Abort \n");
     Frame *frame = frameArray.frames;
-    Frame *lastFrame = frame + frameArray.length - SKIP_FROM_BEGINING;
+    Frame *lastFrame = frame + frameArray.length - SKIP_FROM_END;
     for (; frame < lastFrame; frame++) {
         printf("\tat %s(%s:%d)\n", frame->function, frame->filename, frame->lineno);
     }
     free(frameArray.frames);
 }
 
-void panic() { print_backtrace(); }
+static void handler(int sig, siginfo_t *info, void *secret) {
+    printf("Captured the SIGFPE\n");
+    print_backtrace();
+    exit(0);
+}
+
+void sig_init() {
+    struct sigaction sa;
+    sa.sa_sigaction = (void *)handler;
+    sigaction(SIGFPE, &sa, NULL);
+}
+
+void panic() {}

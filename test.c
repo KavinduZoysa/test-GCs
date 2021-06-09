@@ -1,6 +1,9 @@
 extern void foo(long, long);
+extern void sig_init();
 
 int main() {
-    foo(9223372036854775807, 1);
+    sig_init();
+
+    foo(1, 0);
     return 0;
 }
