@@ -34,3 +34,7 @@ other object file and debugging formats.
 The library relies on the C++ unwind API defined at
 https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html
 This API is provided by GCC and clang.
+
+## Build libbacktrace
+
+./configure --enable-shared && make
