@@ -114,13 +114,7 @@ void find_roots_per_frame(AddRoot addRoot, uintptr_t frame_addr, uint64_t rsp) {
     }
 }
 
-// Consider first call for now
-int i = 0;
-
 void mark_roots(AddRoot add_root, uint64_t rsp) {
-    if (i++ != 0) {
-        return;
-    }
     FrameArray frameArray = {0, 0};
     get_frames(&frameArray);
 
