@@ -7,12 +7,9 @@ declare void @_Bio__println (i8 addrspace(1)*)
 
 declare void @read_stackmap(i8*)
 
-declare void @call_for_mark_roots(i64)
+; declare void @call_for_mark_roots(i64)
 
-define void @dummy_func(i64 %0) {
-  call void @call_for_mark_roots(i64 %0)
-  ret void
-}
+declare void @dummy_func()
 
 define i8* @get_stackmap_pointer() {
   ret i8* @__LLVM_StackMaps
@@ -28,24 +25,24 @@ define void @_B_main () gc "statepoint-example" {
   br i1 %_4, label %L2, label %L1
 L1:
   %_5 = call i8 addrspace(1)* @_bal_alloc (i64 24)
-  call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func()
   %_6 = bitcast i8 addrspace(1)* %_5 to [3 x i8 addrspace(1)*] addrspace(1)*
   %_7 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func()
   %_8 = bitcast i8 addrspace(1)* %_7 to i64 addrspace(1)*
   store i64 1, i64 addrspace(1)* %_8, align 8
   %_9 = getelementptr i8, i8 addrspace(1)* %_7, i64 504403158265495552
   %_10 = getelementptr inbounds [3 x i8 addrspace(1)*], [3 x i8 addrspace(1)*] addrspace(1)* %_6, i64 0, i64 0
   store i8 addrspace(1)* %_9, i8 addrspace(1)* addrspace(1)* %_10
   %_11 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func()
   %_12 = bitcast i8 addrspace(1)* %_11 to i64 addrspace(1)*
   store i64 2, i64 addrspace(1)* %_12, align 8
   %_13 = getelementptr i8, i8 addrspace(1)* %_11, i64 504403158265495552
   %_14 = getelementptr inbounds [3 x i8 addrspace(1)*], [3 x i8 addrspace(1)*] addrspace(1)* %_6, i64 0, i64 1
   store i8 addrspace(1)* %_13, i8 addrspace(1)* addrspace(1)* %_14
   %_15 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func()
   %_16 = bitcast i8 addrspace(1)* %_15 to i64 addrspace(1)*
   store i64 3, i64 addrspace(1)* %_16, align 8
   %_17 = getelementptr i8, i8 addrspace(1)* %_15, i64 504403158265495552
@@ -53,7 +50,6 @@ L1:
   store i8 addrspace(1)* %_17, i8 addrspace(1)* addrspace(1)* %_18
   %_19 = bitcast [3 x i8 addrspace(1)*] addrspace(1)* %_6 to [0 x i8 addrspace(1)*] addrspace(1)*
   %_20 = call i8 addrspace(1)* @_bal_alloc (i64 24)
-  ; call void @dummy_func(i64 %"_rsp")
   %_21 = bitcast i8 addrspace(1)* %_20 to {i64, i64, [0 x i8 addrspace(1)*] addrspace(1)*} addrspace(1)*
   %_22 = getelementptr inbounds {i64, i64, [0 x i8 addrspace(1)*] addrspace(1)*}, {i64, i64, [0 x i8 addrspace(1)*] addrspace(1)*} addrspace(1)* %_21, i64 0, i32 0
   store i64 3, i64 addrspace(1)* %_22

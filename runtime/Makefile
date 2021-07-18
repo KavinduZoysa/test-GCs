@@ -2,7 +2,7 @@ LLVM_SUFFIX=-11
 CLANG ?= clang$(LLVM_SUFFIX)
 LLVM_AS ?= llvm-as$(LLVM_SUFFIX)
 LLVM_LINK ?= llvm-link$(LLVM_SUFFIX)
-OBJS=alloc.o list.o main.o panic.o print.o stackmap.o gc/generate.o gc/hash_table.o mark_roots.o
+OBJS=alloc.o list.o main.o panic.o print.o stackmap.o gc/generate.o gc/hash_table.o mark_roots.o shim.o
 # When we have more than one thing in this list, change from cp to $(LLVM_LINK) below 
 BCS=list_inline.bc
 INCLUDES=tag.h balrt.h

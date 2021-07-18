@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SKIP_FROM_END 4 // skip : print_backtrace, mark_roots, call_mark_roots, dummy_func
+#define SKIP_FROM_END 3 // skip : print_backtrace, mark_roots, call_mark_roots, dummy_func
 #define SKIP_FROM_BEGINING 4 // skip : main, ...
 #define FRAME_MIN_SIZE SKIP_FROM_BEGINING + 5
 #define THREAD 0
@@ -61,7 +61,7 @@ void add_root(Root *root, void *arg) {
     // printf("Found root : %p\n", *root);
 }
 
-void mark_roots(AddRoot add_root, uint64_t rsp) {
+void mark_roots(AddRoot add_root, uint8_t* rsp) {
     FrameArray frameArray = {0, 0};
     get_frames(&frameArray);
 
@@ -74,20 +74,20 @@ void mark_roots(AddRoot add_root, uint64_t rsp) {
     // i.e. Iterate over functions record and find the function such that function_address + codeOffset = frame_address
     // 3. If function address was found, get call sites between the begining of function_address and frame_address
     // 4. Get the location of heap reference(root)
-    int i = 0;
     for (; f < lastFrame; f++) {
         // find_roots_per_frame(add_root, f->pc, rsp);
         frame_info_t* frame = lookup_return_address(table, f->pc);
         for (size_t p = 0; p < frame->numSlots; p++) {
             pointer_slot_t* psl = frame->slots + p;
-            uint32_t** ptr = (uint32_t**)((uint8_t*)rsp + psl->offset);
+            uint32_t** ptr = (uint32_t**)(rsp + psl->offset);
             printf("root taken from stack map : %p\n", *ptr);
         }
     }
     free(frameArray.frames);
 }
 
-void call_for_mark_roots(uint64_t rsp) {
+void call_for_mark_roots(uint8_t* stackPtr) {
     AddRoot add_root = &add_root;
-    mark_roots(add_root, rsp);
+    mark_roots(add_root, stackPtr + 8);
+    printf("\n");
 }

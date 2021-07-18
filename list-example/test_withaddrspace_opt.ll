@@ -1,5 +1,5 @@
 ; ModuleID = 'test_withaddrspace.ll'
-source_filename = "test_withaddrspace.ll"
+source_filename = "test_withaddrspace_opt.ll"
 
 @_bal_stack_guard = external global i8*
 @__LLVM_StackMaps = external constant i8, align 4
@@ -12,12 +12,7 @@ declare void @_Bio__println(i8 addrspace(1)*)
 
 declare void @read_stackmap(i8*)
 
-declare void @call_for_mark_roots(i64)
-
-define void @dummy_func(i64 %0) {
-  call void @call_for_mark_roots(i64 %0)
-  ret void
-}
+declare void @dummy_func()
 
 define i8* @get_stackmap_pointer() {
   ret i8* @__LLVM_StackMaps
@@ -35,14 +30,14 @@ define void @_B_main() gc "statepoint-example" {
 L1:                                               ; preds = %0
   %statepoint_token = call token (i64, i32, i8 addrspace(1)* (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p1i8i64f(i64 2882400000, i32 0, i8 addrspace(1)* (i64)* @_bal_alloc, i32 1, i32 0, i64 24, i32 0, i32 0)
   %_57 = call i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token %statepoint_token)
-  %statepoint_token8 = call token (i64, i32, void (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 2882400000, i32 0, void (i64)* @dummy_func, i32 1, i32 0, i64 %_rsp, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_57) ]
+  %statepoint_token8 = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @dummy_func, i32 0, i32 0, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_57) ]
   %_5.relocated = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token8, i32 0, i32 0) ; (%_57, %_57)
   %_6 = bitcast i8 addrspace(1)* %_5.relocated to [3 x i8 addrspace(1)*] addrspace(1)*
   %statepoint_token9 = call token (i64, i32, i8 addrspace(1)* (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p1i8i64f(i64 2882400000, i32 0, i8 addrspace(1)* (i64)* @_bal_alloc, i32 1, i32 0, i64 8, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated) ]
   %_710 = call i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token %statepoint_token9)
   %_5.relocated11 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token9, i32 0, i32 0) ; (%_5.relocated, %_5.relocated)
   %_6.remat = bitcast i8 addrspace(1)* %_5.relocated11 to [3 x i8 addrspace(1)*] addrspace(1)*
-  %statepoint_token12 = call token (i64, i32, void (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 2882400000, i32 0, void (i64)* @dummy_func, i32 1, i32 0, i64 %_rsp, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated11, i8 addrspace(1)* %_710) ]
+  %statepoint_token12 = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @dummy_func, i32 0, i32 0, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated11, i8 addrspace(1)* %_710) ]
   %_5.relocated13 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token12, i32 0, i32 0) ; (%_5.relocated11, %_5.relocated11)
   %_7.relocated = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token12, i32 1, i32 1) ; (%_710, %_710)
   %_6.remat1 = bitcast i8 addrspace(1)* %_5.relocated13 to [3 x i8 addrspace(1)*] addrspace(1)*
@@ -55,7 +50,7 @@ L1:                                               ; preds = %0
   %_1115 = call i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token %statepoint_token14)
   %_5.relocated16 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token14, i32 0, i32 0) ; (%_5.relocated13, %_5.relocated13)
   %_6.remat2 = bitcast i8 addrspace(1)* %_5.relocated16 to [3 x i8 addrspace(1)*] addrspace(1)*
-  %statepoint_token17 = call token (i64, i32, void (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 2882400000, i32 0, void (i64)* @dummy_func, i32 1, i32 0, i64 %_rsp, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated16, i8 addrspace(1)* %_1115) ]
+  %statepoint_token17 = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @dummy_func, i32 0, i32 0, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated16, i8 addrspace(1)* %_1115) ]
   %_5.relocated18 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token17, i32 0, i32 0) ; (%_5.relocated16, %_5.relocated16)
   %_11.relocated = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token17, i32 1, i32 1) ; (%_1115, %_1115)
   %_6.remat3 = bitcast i8 addrspace(1)* %_5.relocated18 to [3 x i8 addrspace(1)*] addrspace(1)*
@@ -68,7 +63,7 @@ L1:                                               ; preds = %0
   %_1520 = call i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token %statepoint_token19)
   %_5.relocated21 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token19, i32 0, i32 0) ; (%_5.relocated18, %_5.relocated18)
   %_6.remat4 = bitcast i8 addrspace(1)* %_5.relocated21 to [3 x i8 addrspace(1)*] addrspace(1)*
-  %statepoint_token22 = call token (i64, i32, void (i64)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 2882400000, i32 0, void (i64)* @dummy_func, i32 1, i32 0, i64 %_rsp, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated21, i8 addrspace(1)* %_1520) ]
+  %statepoint_token22 = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @dummy_func, i32 0, i32 0, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %_5.relocated21, i8 addrspace(1)* %_1520) ]
   %_5.relocated23 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token22, i32 0, i32 0) ; (%_5.relocated21, %_5.relocated21)
   %_15.relocated = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token22, i32 1, i32 1) ; (%_1520, %_1520)
   %_6.remat5 = bitcast i8 addrspace(1)* %_5.relocated23 to [3 x i8 addrspace(1)*] addrspace(1)*
@@ -113,12 +108,14 @@ declare token @llvm.experimental.gc.statepoint.p0f_p1i8i64f(i64 immarg, i32 imma
 ; Function Attrs: nounwind readonly
 declare i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token) #0
 
-declare token @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 immarg, i32 immarg, void (i64)*, i32 immarg, i32 immarg, ...)
+declare token @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 immarg, i32 immarg, void ()*, i32 immarg, i32 immarg, ...)
 
 ; Function Attrs: nounwind readonly
 declare i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token, i32 immarg, i32 immarg) #0
 
 declare token @llvm.experimental.gc.statepoint.p0f_isVoidp1i8f(i64 immarg, i32 immarg, void (i8 addrspace(1)*)*, i32 immarg, i32 immarg, ...)
+
+declare token @llvm.experimental.gc.statepoint.p0f_isVoidi64f(i64 immarg, i32 immarg, void (i64)*, i32 immarg, i32 immarg, ...)
 
 attributes #0 = { nounwind readonly }
 
