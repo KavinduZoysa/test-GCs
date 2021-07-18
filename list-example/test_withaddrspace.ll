@@ -31,21 +31,21 @@ L1:
   call void @dummy_func(i64 %"_rsp")
   %_6 = bitcast i8 addrspace(1)* %_5 to [3 x i8 addrspace(1)*] addrspace(1)*
   %_7 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  ; call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func(i64 %"_rsp")
   %_8 = bitcast i8 addrspace(1)* %_7 to i64 addrspace(1)*
   store i64 1, i64 addrspace(1)* %_8, align 8
   %_9 = getelementptr i8, i8 addrspace(1)* %_7, i64 504403158265495552
   %_10 = getelementptr inbounds [3 x i8 addrspace(1)*], [3 x i8 addrspace(1)*] addrspace(1)* %_6, i64 0, i64 0
   store i8 addrspace(1)* %_9, i8 addrspace(1)* addrspace(1)* %_10
   %_11 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  ; call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func(i64 %"_rsp")
   %_12 = bitcast i8 addrspace(1)* %_11 to i64 addrspace(1)*
   store i64 2, i64 addrspace(1)* %_12, align 8
   %_13 = getelementptr i8, i8 addrspace(1)* %_11, i64 504403158265495552
   %_14 = getelementptr inbounds [3 x i8 addrspace(1)*], [3 x i8 addrspace(1)*] addrspace(1)* %_6, i64 0, i64 1
   store i8 addrspace(1)* %_13, i8 addrspace(1)* addrspace(1)* %_14
   %_15 = call i8 addrspace(1)* @_bal_alloc (i64 8)
-  ; call void @dummy_func(i64 %"_rsp")
+  call void @dummy_func(i64 %"_rsp")
   %_16 = bitcast i8 addrspace(1)* %_15 to i64 addrspace(1)*
   store i64 3, i64 addrspace(1)* %_16, align 8
   %_17 = getelementptr i8, i8 addrspace(1)* %_15, i64 504403158265495552

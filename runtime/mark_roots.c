@@ -1,5 +1,5 @@
 #include "../third-party/libbacktrace/backtrace.h"
-#include "stackmap.h"
+#include "gc/include/api.h"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -10,10 +10,10 @@
 #define FRAME_MIN_SIZE SKIP_FROM_BEGINING + 5
 #define THREAD 0
 
-StackMap *stack_map;
+statepoint_table_t* table;
 
-void set_stack_map(StackMap *stack_map_ptr) {
-    stack_map = stack_map_ptr;
+void set_statepoint_table(statepoint_table_t *tb) {
+    table = tb;
 }
 
 typedef struct {
@@ -61,65 +61,12 @@ void add_root(Root *root, void *arg) {
     // printf("Found root : %p\n", *root);
 }
 
-void find_roots_per_frame(AddRoot addRoot, uintptr_t frame_addr, uint64_t rsp) {
-    for (size_t f = 0; f < stack_map->numOfFuncs; f++) {
-        FuncInfo *func = stack_map->functions + f;
-        FuncBasicInfo funcBasicInfo = func->funcBasicInfo;
-        uint64_t func_addr = func->funcBasicInfo.address;
-        uint64_t stack_frame_size = func->funcBasicInfo.stackSize;
-        int found = 0;
-        int record_index = 0;
-        for (size_t r = 0; r < func->numOfRecords; r++) {
-            RecordInfo *rec = func->records + r;
-            if (func_addr + rec->codeOffset == frame_addr) {
-                record_index = r;
-                printf("matched callsite with frame address for func : %p\n", func_addr);
-                break;
-            }
-        }
-        if (!record_index) { // There is not a call site match
-            continue;
-        }
-
-        for (size_t r = 0; r <= record_index; r++) {
-            RecordInfo *rec = func->records + r;
-            int loc_count = rec->numLocations;
-            if (loc_count <= 3) {
-                continue;
-            }
-            for (size_t l = 0; l < rec->numLocations; l++) {
-                LocationInfo* locInfo = rec->locations + l;
-                uint8_t kind = locInfo->kind;
-                if (kind == 1) { // Register
-                } else if (kind == 2) { // Direct
-                } else if (kind == 3) { // Indirect
-                    uint16_t reg_num = locInfo->regNum;
-                    if (reg_num != 7) {
-                        printf("Abort : unhandled register number : %d\n", reg_num);
-                        abort();
-                    }
-                    int32_t offset = locInfo->offset;
-                    // rdwarf egNum 7 means rsp
-                    // root is located at rsp + offset
-                    Root *root = (Root*) (rsp + offset);
-                    printf("dereference (root from LLVM Stack Map) : %p\n", *root);
-                    // call addRoot()
-                } else if (kind == 4) { // Constant
-                } else if (kind == 5) { // ConstIndex
-                } else { // No kind
-                }
-            }
-        }
-        break;
-    }
-}
-
 void mark_roots(AddRoot add_root, uint64_t rsp) {
     FrameArray frameArray = {0, 0};
     get_frames(&frameArray);
 
-    Frame *frame = frameArray.frames;
-    Frame *lastFrame = frame + frameArray.length - SKIP_FROM_BEGINING;
+    Frame *f = frameArray.frames;
+    Frame *lastFrame = f + frameArray.length - SKIP_FROM_BEGINING;
 
     // Find roots using stack map
     // 1. Iterate over frames and consider one frame_address here the frame corresponds to one call site
@@ -127,8 +74,15 @@ void mark_roots(AddRoot add_root, uint64_t rsp) {
     // i.e. Iterate over functions record and find the function such that function_address + codeOffset = frame_address
     // 3. If function address was found, get call sites between the begining of function_address and frame_address
     // 4. Get the location of heap reference(root)
-    for (; frame < lastFrame; frame++) {
-        find_roots_per_frame(add_root, frame->pc, rsp);
+    int i = 0;
+    for (; f < lastFrame; f++) {
+        // find_roots_per_frame(add_root, f->pc, rsp);
+        frame_info_t* frame = lookup_return_address(table, f->pc);
+        for (size_t p = 0; p < frame->numSlots; p++) {
+            pointer_slot_t* psl = frame->slots + p;
+            uint32_t** ptr = (uint32_t**)((uint8_t*)rsp + psl->offset);
+            printf("root taken from stack map : %p\n", *ptr);
+        }
     }
     free(frameArray.frames);
 }
