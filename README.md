@@ -6,17 +6,15 @@ Follow the README in `third-party-lib/libbacktrace`
 
 Run Following commands.
 
-        export LD_LIBRARY_PATH=<PATH>/third-party-lib/libbacktrace/.libs
+        cd runtime
+        make
+        cd ..
 
-        clang-11 -c expr_binary_add.ll -o expr_binary_add.o && \
-        clang-11 -g -c nballerina-rt.c -o nballerina-rt.o && \
-        clang-11 -g -c test.c -o test.o && \
-        clang-11 nballerina-rt.o expr_binary_add.o test.o -L third-party-lib/libbacktrace/.libs -lbacktrace -o expr_binary_add
-
-        ./expr_binary_add
+        clang-11 panic-example/Plist00.ll runtime/balrt_inline.bc   runtime/balrt.a -I third-party/libbacktrace -L third-party/libbacktrace/.libs -lbacktrace && ./a.out
 
 You will get following output
 
-        Abort 
-	        at foo(PATH_TO_BAL_SOURCE/expr_binary_add.bal:2)
+        panic: index out of bounds
+	        at _B_main(PATH_TO_BAL_SOURCE/Plist00.bal:5)
+        Aborted (core dumped)
 

@@ -1,8 +1,12 @@
+#include "balrt.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "third-party-lib/libbacktrace/backtrace.h"
+#include "../third-party-lib/libbacktrace/backtrace.h"
 
 #define FRAME_MIN_SIZE 5
 #define SKIP_FROM_BEGINING 4
@@ -50,7 +54,6 @@ void print_backtrace() {
     FrameArray frameArray = {0, 0};
     backtrace_full(state, SKIP_FROM_END, on_frame, on_error, &frameArray);
 
-    printf("Abort \n");
     Frame *frame = frameArray.frames;
     Frame *lastFrame = frame + frameArray.length - SKIP_FROM_BEGINING;
     for (; frame < lastFrame; frame++) {
@@ -59,4 +62,25 @@ void print_backtrace() {
     free(frameArray.frames);
 }
 
-void panic() { print_backtrace(); }
+const char *panicMessages[] = {
+    0,
+    "arithmetic overflow",
+    "divide by zero",
+    "bad type cast",
+    "stack overflow",
+    "index out of bounds",
+    "list too long"
+};
+
+NORETURN COLD void _bal_panic(Error err) {
+    int code = err & 0xFF;
+    int64_t lineNumber = err >> 8;
+    fputs("panic: ", stderr);
+    if (code <= 0 || code >= sizeof(panicMessages)/sizeof(panicMessages[0]))
+        abort();
+    fprintf(stderr, "%s\n", panicMessages[code]);
+    print_backtrace();
+    fflush(stderr);
+    abort();
+}
+
