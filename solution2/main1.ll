@@ -1,9 +1,7 @@
-; ModuleID = 'testx.c'
-source_filename = "testx.c"
+; ModuleID = 'main1.ll'
+source_filename = "main1.ll"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
-
-declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*)
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 gc "statepoint-example" {
@@ -16,6 +14,8 @@ define dso_local i32 @main() #0 gc "statepoint-example" {
   store i8 addrspace(1)* %5, i8 addrspace(1)** %2, align 8
   ret i32 0
 }
+
+declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*) #1
 
 ; Function Attrs: nounwind
 declare dso_local noalias i8 addrspace(1)* @malloc(i64) #1
