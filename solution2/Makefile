@@ -1,23 +1,23 @@
 LLVM_SUFFIX=-11
 CLANG ?= clang$(LLVM_SUFFIX)
-# MAIN_LL = main1.ll
-MAIN_LL = main2.ll
-MAIN_S = main.s
+# BAL_LL = bal1.ll
+BAL_LL = bal2.ll
+BAL_S = bal.s
 MAIN_EXE = main.exe
 RUNTIME = runtime/rt.a
 
 all: $(MAIN_EXE)
 
-$(MAIN_EXE): $(RUNTIME) $(MAIN_S)
-	$(CLANG) $(MAIN_S) $< -o $@ 
+$(MAIN_EXE): $(RUNTIME) $(BAL_S)
+	$(CLANG) $(BAL_S) $< -o $@ 
 
 $(RUNTIME):
 	$(MAKE) -C runtime all
 
-$(MAIN_S):
-	$(CLANG) $(MAIN_LL) -S -o $@
+$(BAL_S):
+	$(CLANG) $(BAL_LL) -S -o $@
 
 clean:
-	-rm -f $(MAIN_EXE) $(MAIN_S) $(MAIN_TEMP_S)
+	-rm -f $(MAIN_EXE) $(BAL_S)
 	$(MAKE) -C runtime clean
 
