@@ -35,7 +35,7 @@ $(RT_OPT_LL): $(RT_GC_LL)
 	$(OPT) --rewrite-statepoints-for-gc -S -o $@ $<
 
 $(RT_GC_LL): $(RT_LL)
-	sed -e '/target datalayout/ s/"$$/-ni:1"/' -e 's/define dso_local i8.*/define dso_local i8 addrspace(1)* @foo(i8 addrspace(1)* %0) gc "statepoint-example" {/g' -e 's/call void @dummy_func_to_gen_statepoints().*/ /g' -e '/^define dso_local i8.*/a call void @dummy_func_to_gen_statepoints()' $< >$@
+	sed -e '/target datalayout/ s/"$$/-ni:1"/' -e 's/define dso_local i8.*/define dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)* %0) gc "statepoint-example" {/g' -e 's/call void @dummy_func_to_gen_statepoints().*/ /g' -e '/^define dso_local i8.*/a call void @dummy_func_to_gen_statepoints()' $< >$@
 
 $(RT_LL): $(RT_C)
 	$(CLANG) -S -emit-llvm -o $@ $<

@@ -9,7 +9,7 @@ define i8* @get_stackmap_pointer() {
   ret i8* @__LLVM_StackMaps
 }
 
-declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*)
+declare dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)*)
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @_B_main() #0 gc "statepoint-example" {
@@ -18,7 +18,7 @@ define dso_local i32 @_B_main() #0 gc "statepoint-example" {
   %3 = call i8 addrspace(1)* @malloc(i64 8) #3
   store i8 addrspace(1)* %3, i8 addrspace(1)** %1, align 8
   %4 = load i8 addrspace(1)*, i8 addrspace(1)** %1, align 8
-  %statepoint_token = call token (i64, i32, i8 addrspace(1)* (i8 addrspace(1)*)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p1i8p1i8f(i64 2882400000, i32 0, i8 addrspace(1)* (i8 addrspace(1)*)* @foo, i32 1, i32 0, i8 addrspace(1)* %4, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %4) ]
+  %statepoint_token = call token (i64, i32, i8 addrspace(1)* (i8 addrspace(1)*)*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_p1i8p1i8f(i64 2882400000, i32 0, i8 addrspace(1)* (i8 addrspace(1)*)* @rt_func, i32 1, i32 0, i8 addrspace(1)* %4, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %4) ]
   %5 = call i8 addrspace(1)* @llvm.experimental.gc.result.p1i8(token %statepoint_token)
   %6 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token, i32 0, i32 0) ; (%4, %4)
   store i8 addrspace(1)* %5, i8 addrspace(1)** %2, align 8

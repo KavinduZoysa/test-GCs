@@ -9,7 +9,7 @@ define dso_local void @dummy_func() #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i8 addrspace(1)* @foo(i8 addrspace(1)* %0) #0 gc "statepoint-example" {
+define dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)* %0) #0 gc "statepoint-example" {
   %statepoint_token = call token (i64, i32, void ()*, i32, i32, ...) @llvm.experimental.gc.statepoint.p0f_isVoidf(i64 2882400000, i32 0, void ()* @dummy_func, i32 0, i32 0, i32 0, i32 0) [ "gc-live"(i8 addrspace(1)* %0) ]
   %2 = call coldcc i8 addrspace(1)* @llvm.experimental.gc.relocate.p1i8(token %statepoint_token, i32 0, i32 0) ; (%0, %0)
   %3 = alloca i8 addrspace(1)*, align 8

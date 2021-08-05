@@ -10,12 +10,12 @@ define dso_local i32 @main() #0 gc "statepoint-example" {
   %3 = call noalias i8 addrspace(1)* @malloc(i64 8) #2
   store i8 addrspace(1)* %3, i8 addrspace(1)** %1, align 8
   %4 = load i8 addrspace(1)*, i8 addrspace(1)** %1, align 8
-  %5 = call i8 addrspace(1)* @foo(i8 addrspace(1)* %4)
+  %5 = call i8 addrspace(1)* @rt_func(i8 addrspace(1)* %4)
   store i8 addrspace(1)* %5, i8 addrspace(1)** %2, align 8
   ret i32 0
 }
 
-declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*) #1
+declare dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)*) #1
 
 ; Function Attrs: nounwind
 declare dso_local noalias i8 addrspace(1)* @malloc(i64) #1
