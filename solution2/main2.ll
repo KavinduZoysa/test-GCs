@@ -12,7 +12,7 @@ define i8* @get_stackmap_pointer() {
 declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*)
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @main() #0 gc "statepoint-example" {
+define dso_local i32 @_B_main() #0 gc "statepoint-example" {
   %1 = alloca i8 addrspace(1)*, align 8
   %2 = alloca i8 addrspace(1)*, align 8
   %3 = call i8 addrspace(1)* @malloc(i64 8) #3
