@@ -1,8 +1,8 @@
 LLVM_SUFFIX=-11
 CLANG ?= clang$(LLVM_SUFFIX)
 OPT ?= opt$(LLVM_SUFFIX)
-MAIN_LL = main1.ll
-# MAIN_LL = main2.ll
+# MAIN_LL = main1.ll
+MAIN_LL = main2.ll
 MAIN_EXE = main.exe
 RT_O = rt.o
 RT_A = rt.a

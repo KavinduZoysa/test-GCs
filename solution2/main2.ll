@@ -3,6 +3,12 @@ source_filename = "testx.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
+@__LLVM_StackMaps = external constant i8, align 4
+
+define i8* @get_stackmap_pointer() {
+  ret i8* @__LLVM_StackMaps
+}
+
 declare dso_local i8 addrspace(1)* @foo(i8 addrspace(1)*)
 
 ; Function Attrs: noinline nounwind optnone uwtable
