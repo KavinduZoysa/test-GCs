@@ -26,7 +26,7 @@ typedef struct {
     Frame *frames;
 } FrameArray;
 
-void on_error(void *vdata, const char *msg, int errnum) { printf("Errorr : %s\n", msg); }
+void on_error(void *vdata, const char *msg, int errnum) { printf("Error : %s\n", msg); }
 
 int on_frame(void *data, uintptr_t pc, const char *filename, int lineno, const char *function) {
     FrameArray *frameArray = (FrameArray *)data;
