@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SKIP_FROM_END 3 // skip : print_backtrace, mark_roots, call_mark_roots, dummy_func
+#define SKIP_FROM_END 2 // skip : print_backtrace, mark_roots, call_mark_roots, dummy_func
 #define SKIP_FROM_BEGINING 4 // skip : main, ...
 #define FRAME_MIN_SIZE SKIP_FROM_BEGINING + 5
 #define THREAD 0

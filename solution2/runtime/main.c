@@ -16,16 +16,6 @@ void gc_init() {
     printf("\n\n");
 }
 
-// void read_stackmaps() {
-//     void* stack_map = (void*)STACKMAP;
-//     printf("stack map : %p\n", stack_map);
-//     printf("version : %d\n", *(uint8_t*)stack_map);
-
-//     stack_map = (void*)get_stackmap_pointer();
-//     printf("stack map : %p\n", stack_map);
-//     printf("version : %d\n", *(uint8_t*)stack_map);
-// }
-
 int main() {
     gc_init();
     _B_main();
