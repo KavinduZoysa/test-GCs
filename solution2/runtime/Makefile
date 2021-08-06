@@ -11,13 +11,18 @@ RT_LL = rt.ll
 RT_GC_LL = rt_gc.ll
 RT_OPT_LL = rt_opt.ll
 
+SHIM_O = shim.o
+
 MAIN_C = main.c
 AR=ar
 
 all: $(RT_A)
 
-$(RT_A): $(RT_O) $(OBJS)
+$(RT_A): $(RT_O) $(OBJS) $(SHIM_O)
 	$(AR) r $@ $^
+
+$(SHIM_O):
+	$(CLANG) -c -o $@ shim.s
 
 %.o: %.c
 	$(CLANG) -O2 -c -o $@ $<
@@ -35,10 +40,13 @@ $(RT_OPT_LL): $(RT_GC_LL)
 	$(OPT) --rewrite-statepoints-for-gc -S -o $@ $<
 
 $(RT_GC_LL): $(RT_LL)
-	sed -e '/target datalayout/ s/"$$/-ni:1"/' -e 's/define dso_local i8.*/define dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)* %0) gc "statepoint-example" {/g' -e 's/call void @dummy_func_to_gen_statepoints().*/ /g' -e '/^define dso_local i8.*/a call void @dummy_func_to_gen_statepoints()' $< >$@
+	sed -e '/target datalayout/ s/"$$/-ni:1"/' \
+	-e 's/define dso_local i8.*/define dso_local i8 addrspace(1)* @rt_func(i8 addrspace(1)* %0) gc "statepoint-example" {/g' \
+	-e 's/call void (...) @dummy_func_to_gen_statepoints().*/ /g' \
+	-e '/^define dso_local i8.*/a call void (...) @dummy_func_to_gen_statepoints()' $< >$@
 
 $(RT_LL): $(RT_C)
 	$(CLANG) -S -emit-llvm -o $@ $<
 
 clean:
-	-rm -f $(RT_O) $(RT_A) $(RT_LL) $(RT_GC_LL) $(RT_OPT_LL) $(RT_S) $(RT_TEMP_S) $(OBJS)
+	-rm -f $(RT_O) $(RT_A) $(RT_LL) $(RT_GC_LL) $(RT_OPT_LL) $(RT_S) $(RT_TEMP_S) $(OBJS) $(SHIM_O)

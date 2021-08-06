@@ -87,6 +87,7 @@ void mark_roots(AddRoot add_root, uint8_t* rsp) {
 }
 
 void call_for_mark_roots(uint8_t* stackPtr) {
+    printf("%p\n", stackPtr);
     AddRoot add_root = &add_root;
     mark_roots(add_root, stackPtr + 8);
     printf("\n");
