@@ -212,24 +212,8 @@ callsite_header_t* next_callsite(callsite_header_t* callsite) {
     return (callsite_header_t*)ptr_val;
 }
 
-statepoint_table_t* generate_table(void* bal_stackmap, void* rt_stackmap, float load_factor) {
-
-    uint8_t* version = (uint8_t*)bal_stackmap;
-    if (*version != 3) {
-        printf("error: only LLVM stackmap version 3 is supported.\n");
-        assert(false && "see above");
-        return NULL;
-    }
-
-    stackmap_header_t* header = (stackmap_header_t*)bal_stackmap;
-
-    assert(header->reserved1 == 0 && "expected to be 0");
-    assert(header->reserved2 == 0 && "expected to be 0");
-
-    uint64_t numCallsites = header->numRecords;
-
-    statepoint_table_t* table = new_table(load_factor, numCallsites);
-
+void insert_info_to(statepoint_table_t* table, stackmap_header_t* map) {
+    stackmap_header_t* header = (stackmap_header_t*)map;
     function_info_t* functions = (function_info_t*)(header + 1);
 
     // we skip over constants, which are uint64_t's
@@ -241,7 +225,7 @@ statepoint_table_t* generate_table(void* bal_stackmap, void* rt_stackmap, float 
     function_info_t* currentFn = functions;
     uint64_t visited = 0;
     uint64_t prev_ret_addr = 0;
-    for(uint64_t _unused = 0; _unused < numCallsites; _unused++) {
+    for(uint64_t _unused = 0; _unused < header->numRecords; _unused++) {
         if(visited >= currentFn->callsiteCount) {
             currentFn++;
             visited = 0;
@@ -249,13 +233,37 @@ statepoint_table_t* generate_table(void* bal_stackmap, void* rt_stackmap, float 
         }
 
         frame_info_t* info = generate_frame_info(callsite, currentFn); // equvalnt to one call site
-
         insert_key(table, info->retAddr, info);
 
         // setup next iteration
         callsite = next_callsite(callsite);
         visited++;
     }
+}
+
+statepoint_table_t* generate_table(void* bal_stackmap, void* rt_stackmap, float load_factor) {
+
+    uint8_t* version = (uint8_t*)bal_stackmap;
+    if (*version != 3) {
+        printf("error: only LLVM stackmap version 3 is supported.\n");
+        assert(false && "see above");
+        return NULL;
+    }
+
+    stackmap_header_t* bal_header = (stackmap_header_t*)bal_stackmap;
+    stackmap_header_t* rt_header = (stackmap_header_t*)rt_stackmap;
+
+    assert(bal_header->reserved1 == 0 && "expected to be 0");
+    assert(bal_header->reserved2 == 0 && "expected to be 0");
+    assert(rt_header->reserved1 == 0 && "expected to be 0");
+    assert(rt_header->reserved2 == 0 && "expected to be 0");
+
+    uint64_t numCallsites = bal_header->numRecords;
+
+    statepoint_table_t* table = new_table(load_factor, bal_header->numRecords + rt_header->numRecords);
+
+    insert_info_to(table, bal_stackmap);
+    insert_info_to(table, rt_stackmap);
 
     return table;
 }
