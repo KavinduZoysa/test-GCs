@@ -1,6 +1,7 @@
 LLVM_SUFFIX=-11
 CLANG ?= clang$(LLVM_SUFFIX)
 OPT ?= opt$(LLVM_SUFFIX)
+OBJS = main.o gc/generate.o gc/hash_table.o mark_roots.o
 RT_O = rt.o
 RT_A = rt.a
 RT_C = rt.c
@@ -11,13 +12,15 @@ RT_GC_LL = rt_gc.ll
 RT_OPT_LL = rt_opt.ll
 
 MAIN_C = main.c
-MAIN_O = main.o
 AR=ar
 
 all: $(RT_A)
 
-$(RT_A): $(RT_O) $(MAIN_O)
+$(RT_A): $(RT_O) $(OBJS)
 	$(AR) r $@ $^
+
+%.o: %.c
+	$(CLANG) -O2 -c -o $@ $<
 
 $(RT_O): $(RT_S)
 	$(CLANG) -c $< -o $@
@@ -27,9 +30,6 @@ $(RT_S): $(RT_TEMP_S)
 
 $(RT_TEMP_S): $(RT_OPT_LL)
 	$(CLANG) -O2 -S -o $@ $<
-
-$(MAIN_O):
-	$(CLANG) -O2 -c -o $@ $(MAIN_C)
 
 $(RT_OPT_LL): $(RT_GC_LL)
 	$(OPT) --rewrite-statepoints-for-gc -S -o $@ $<
@@ -41,4 +41,4 @@ $(RT_LL): $(RT_C)
 	$(CLANG) -S -emit-llvm -o $@ $<
 
 clean:
-	-rm -f $(RT_O) $(RT_A) $(RT_LL) $(RT_GC_LL) $(RT_OPT_LL) $(RT_S) $(RT_TEMP_S) $(MAIN_O)
+	-rm -f $(RT_O) $(RT_A) $(RT_LL) $(RT_GC_LL) $(RT_OPT_LL) $(RT_S) $(RT_TEMP_S) $(OBJS)

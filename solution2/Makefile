@@ -9,7 +9,7 @@ RUNTIME = runtime/rt.a
 all: $(MAIN_EXE)
 
 $(MAIN_EXE): $(RUNTIME) $(BAL_S)
-	$(CLANG) $(BAL_S) $< -o $@ 
+	$(CLANG) $(BAL_S) $< -lm -L third-party/libbacktrace/.libs -lbacktrace -o $@ 
 
 $(RUNTIME):
 	$(MAKE) -C runtime all
