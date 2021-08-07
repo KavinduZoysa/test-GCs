@@ -19,4 +19,3 @@ $(BAL_S):
 clean:
 	-rm -f $(MAIN_EXE) $(BAL_S)
 	$(MAKE) -C runtime clean
-
