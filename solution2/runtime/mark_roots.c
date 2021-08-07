@@ -58,7 +58,6 @@ typedef char *Root;
 typedef void (*AddRoot)(Root *root, void *arg);
 
 void add_root(Root *root, void *arg) {
-    // printf("Found root : %p\n", *root);
 }
 
 void mark_roots(AddRoot add_root, uint8_t* rsp) {
@@ -70,19 +69,16 @@ void mark_roots(AddRoot add_root, uint8_t* rsp) {
 
     // Find roots using stack map
     // 1. Iterate over frames and consider one frame_address here the frame corresponds to one call site
-    // 2. Should find the function adrdess from the stackmap to that frame
-    // i.e. Iterate over functions record and find the function such that function_address + codeOffset = frame_address
-    // 3. If function address was found, get call sites between the begining of function_address and frame_address
-    // 4. Get the location of heap reference(root)
+    // 2. Lookup the table for frame information for given frame address
+    // 3. Interate over records of that frame and find heap references(roots)
     for (; f < lastFrame; f++) {
-        // find_roots_per_frame(add_root, f->pc, rsp);
         frame_info_t* frame = lookup_return_address(table, f->pc);
         for (size_t p = 0; p < frame->numSlots; p++) {
             pointer_slot_t* psl = frame->slots + p;
             uint32_t** ptr = (uint32_t**)(rsp + psl->offset);
             printf("root taken from stack map : %p\n", *ptr);
         }
-        rsp = rsp + frame->frameSize + 8;
+        rsp = rsp + frame->frameSize + 8; 
     }
     free(frameArray.frames);
 }

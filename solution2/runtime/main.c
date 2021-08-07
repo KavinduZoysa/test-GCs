@@ -10,7 +10,7 @@ extern uint8_t STACKMAP[];
 extern uint8_t* get_stackmap_pointer();
 
 void gc_init() {
-    statepoint_table_t* table = generate_table((void*) get_stackmap_pointer(), (void*)STACKMAP, 0.5);
+    statepoint_table_t* table = generate_table((void*)get_stackmap_pointer(), (void*)STACKMAP, 0.5);
     set_statepoint_table(table);
     print_table(stdout, table, true);
     printf("\n\n");
