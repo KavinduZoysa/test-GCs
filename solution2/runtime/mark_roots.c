@@ -82,6 +82,7 @@ void mark_roots(AddRoot add_root, uint8_t* rsp) {
             uint32_t** ptr = (uint32_t**)(rsp + psl->offset);
             printf("root taken from stack map : %p\n", *ptr);
         }
+        rsp = rsp + frame->frameSize + 8;
     }
     free(frameArray.frames);
 }
